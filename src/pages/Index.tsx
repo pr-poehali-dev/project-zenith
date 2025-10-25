@@ -45,6 +45,7 @@ const Index = () => {
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
   const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
   const [autoRestart, setAutoRestart] = useState(true);
+  const [attempts, setAttempts] = useState<Record<number, number>>({});
 
   useEffect(() => {
     fetch('/api/levels').then(r => r.json()).then(setLevels).catch(() => {
@@ -62,6 +63,7 @@ const Index = () => {
 
   const startLevel = (level: Level) => {
     setCurrentLevel(level);
+    setAttempts(prev => ({ ...prev, [level.id]: (prev[level.id] || 0) + 1 }));
     const obstacles = generateObstacles(level.difficulty, level.duration);
     setGameState({
       player: createPlayer(),
@@ -191,6 +193,10 @@ const Index = () => {
             {currentLevel.name}
           </h2>
           <div className="flex gap-1">{renderStars(currentLevel.difficulty)}</div>
+          <Badge variant="outline" className="text-lg px-3 py-1">
+            <Icon name="RotateCcw" className="w-4 h-4 mr-1" />
+            {attempts[currentLevel.id] || 0}
+          </Badge>
         </div>
         
         <GameCanvas
