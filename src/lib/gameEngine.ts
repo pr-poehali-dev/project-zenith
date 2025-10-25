@@ -40,11 +40,11 @@ export const createPlayer = (): Player => ({
 
 export const generateObstacles = (levelDifficulty: number, levelLength: number): Obstacle[] => {
   const obstacles: Obstacle[] = [];
-  const obstacleCount = 15 + levelDifficulty * 10;
+  const obstacleCount = 8 + levelDifficulty * 4;
   const spacing = (levelLength * 100) / obstacleCount;
 
   for (let i = 0; i < obstacleCount; i++) {
-    const x = 600 + i * spacing + Math.random() * spacing * 0.5;
+    const x = 600 + i * spacing + Math.random() * spacing * 0.3;
     
     obstacles.push({
       x,
