@@ -283,7 +283,10 @@ const Index = () => {
           <TabsContent value="levels" className="space-y-4">
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
               {levels.map((level) => (
-                <Card key={level.id} className="p-6 hover:neon-box transition-all cursor-pointer" onClick={() => startLevel(level)}>
+                <Card key={level.id} className="p-6 hover:neon-box transition-all cursor-pointer relative" onClick={() => startLevel(level)}>
+                  <div className="absolute top-3 right-3">
+                    <Icon name="CheckCircle2" className="w-6 h-6 text-green-500 fill-green-500" />
+                  </div>
                   <div className="flex items-start justify-between mb-4">
                     <div>
                       <h3 className="text-xl font-bold mb-1">{level.name}</h3>
