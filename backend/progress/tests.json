@@ -1,0 +1,22 @@
+{
+  "tests": [
+    {
+      "name": "Save level progress",
+      "method": "POST",
+      "body": {
+        "player_id": 1,
+        "level_id": 1,
+        "completed": true,
+        "time_seconds": 25
+      },
+      "expectedStatus": 200,
+      "expectedBody": {
+        "progress": {
+          "player_id": "number",
+          "level_id": "number"
+        }
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

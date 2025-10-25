@@ -2,7 +2,7 @@ export type Language = 'ru' | 'en' | 'zh';
 
 export const translations = {
   ru: {
-    title: 'Geometry Dash',
+    title: 'XD Dash',
     play: 'Играть',
     levels: 'Уровни',
     leaderboard: 'Рейтинг',
@@ -39,7 +39,7 @@ export const translations = {
     locked: 'Заблокировано',
   },
   en: {
-    title: 'Geometry Dash',
+    title: 'XD Dash',
     play: 'Play',
     levels: 'Levels',
     leaderboard: 'Leaderboard',
@@ -76,7 +76,7 @@ export const translations = {
     locked: 'Locked',
   },
   zh: {
-    title: '几何冲刺',
+    title: 'XD Dash',
     play: '开始游戏',
     levels: '关卡',
     leaderboard: '排行榜',
