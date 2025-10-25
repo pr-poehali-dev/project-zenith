@@ -13,8 +13,10 @@
       "expectedBody": {
         "progress": {
           "player_id": "number",
-          "level_id": "number"
-        }
+          "level_id": "number",
+          "completed": "boolean"
+        },
+        "total_stars": "number"
       },
       "bodyMatcher": "partial"
     }

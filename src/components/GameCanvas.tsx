@@ -6,9 +6,10 @@ interface GameCanvasProps {
   onUpdate: (state: GameState) => void;
   onComplete: () => void;
   onGameOver: () => void;
+  orientation?: 'horizontal' | 'vertical';
 }
 
-export const GameCanvas = ({ gameState, onUpdate, onComplete, onGameOver }: GameCanvasProps) => {
+export const GameCanvas = ({ gameState, onUpdate, onComplete, onGameOver, orientation = 'horizontal' }: GameCanvasProps) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [isJumping, setIsJumping] = useState(false);
   const animationFrameRef = useRef<number>();
@@ -109,13 +110,16 @@ export const GameCanvas = ({ gameState, onUpdate, onComplete, onGameOver }: Game
     }
   };
 
+  const canvasWidth = orientation === 'vertical' ? 400 : 800;
+  const canvasHeight = orientation === 'vertical' ? 600 : 450;
+
   return (
     <canvas
       ref={canvasRef}
-      width={800}
-      height={450}
+      width={canvasWidth}
+      height={canvasHeight}
       className="game-canvas border-2 border-primary/50 rounded-lg cursor-pointer neon-box"
-      style={{ borderColor: 'hsl(var(--neon-blue))' }}
+      style={{ borderColor: 'hsl(var(--neon-blue))', maxWidth: '100%' }}
       onClick={handleJump}
       onTouchStart={handleJump}
     />

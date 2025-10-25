@@ -43,6 +43,8 @@ const Index = () => {
   const [leaderboard, setLeaderboard] = useState<User[]>([]);
   const [achievements, setAchievements] = useState<any[]>([]);
   const [audioElement, setAudioElement] = useState<HTMLAudioElement | null>(null);
+  const [orientation, setOrientation] = useState<'horizontal' | 'vertical'>('horizontal');
+  const [autoRestart, setAutoRestart] = useState(true);
 
   useEffect(() => {
     fetch('/api/levels').then(r => r.json()).then(setLevels).catch(() => {
@@ -82,18 +84,24 @@ const Index = () => {
   };
 
   const handleGameOver = () => {
-    if (audioElement) {
-      audioElement.pause();
-      audioElement.currentTime = 0;
+    if (autoRestart && currentLevel) {
+      setTimeout(() => {
+        startLevel(currentLevel);
+      }, 500);
+    } else {
+      if (audioElement) {
+        audioElement.pause();
+        audioElement.currentTime = 0;
+      }
+      toast({
+        title: t('gameOver'),
+        description: t('retry'),
+        variant: 'destructive',
+      });
     }
-    toast({
-      title: t('gameOver'),
-      description: t('retry'),
-      variant: 'destructive',
-    });
   };
 
-  const handleLevelComplete = () => {
+  const handleLevelComplete = async () => {
     if (audioElement) {
       audioElement.pause();
       audioElement.currentTime = 0;
@@ -101,6 +109,29 @@ const Index = () => {
     
     if (gameState && currentLevel && user) {
       const timeInSeconds = Math.floor(gameState.elapsedTime / 1000);
+      
+      try {
+        const response = await fetch('https://functions.poehali.dev/ea2a257c-745d-4a51-957a-80f753406af9', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            player_id: user.id,
+            level_id: currentLevel.id,
+            completed: true,
+            time_seconds: timeInSeconds,
+          }),
+        });
+        
+        if (response.ok) {
+          const data = await response.json();
+          if (data.total_stars !== undefined) {
+            setUser({ ...user, total_stars: data.total_stars });
+          }
+        }
+      } catch (error) {
+        console.error('Failed to save progress:', error);
+      }
+      
       toast({
         title: t('levelComplete'),
         description: `${t('bestTime')}: ${timeInSeconds} ${t('sec')}`,
@@ -109,12 +140,12 @@ const Index = () => {
   };
 
   const handleAuth = async () => {
-    const endpoint = isLogin ? '/api/auth/login' : '/api/auth/register';
+    const action = isLogin ? 'login' : 'register';
     try {
-      const response = await fetch(endpoint, {
+      const response = await fetch('https://functions.poehali.dev/806aaad4-ec56-4897-998f-2a493537c9d5', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ username, password }),
+        body: JSON.stringify({ username, password, action }),
       });
       
       if (response.ok) {
@@ -122,6 +153,11 @@ const Index = () => {
         setUser(data.user);
         setShowAuth(false);
         toast({ title: isLogin ? t('login') : t('register'), description: `${t('username')}: ${data.user.username}` });
+        
+        fetch('https://functions.poehali.dev/aef3ba3d-d8dd-46e3-825e-af8b0a1ad04a')
+          .then(r => r.json())
+          .then(data => setLeaderboard(data.leaderboard || []))
+          .catch(() => {});
       } else {
         toast({ title: 'Error', variant: 'destructive' });
       }
@@ -162,9 +198,10 @@ const Index = () => {
           onUpdate={setGameState}
           onComplete={handleLevelComplete}
           onGameOver={handleGameOver}
+          orientation={orientation}
         />
         
-        <div className="mt-4 flex gap-2">
+        <div className="mt-4 flex gap-2 flex-wrap justify-center">
           <Button onClick={backToMenu} variant="outline">
             <Icon name="ArrowLeft" className="mr-2 w-4 h-4" />
             {t('backToMenu')}
@@ -172,6 +209,20 @@ const Index = () => {
           <Button onClick={() => currentLevel && startLevel(currentLevel)}>
             <Icon name="RotateCcw" className="mr-2 w-4 h-4" />
             {t('retry')}
+          </Button>
+          <Button 
+            onClick={() => setAutoRestart(!autoRestart)} 
+            variant={autoRestart ? 'default' : 'outline'}
+          >
+            <Icon name="Repeat" className="mr-2 w-4 h-4" />
+            Авто
+          </Button>
+          <Button 
+            onClick={() => setOrientation(orientation === 'horizontal' ? 'vertical' : 'horizontal')}
+            variant="outline"
+          >
+            <Icon name={orientation === 'horizontal' ? 'Smartphone' : 'Monitor'} className="mr-2 w-4 h-4" />
+            {orientation === 'horizontal' ? 'Верт.' : 'Гориз.'}
           </Button>
         </div>
         

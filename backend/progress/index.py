@@ -7,8 +7,14 @@ Returns: HTTP response with progress data
 import json
 import os
 from typing import Dict, Any
+from datetime import datetime
 import psycopg2
 from psycopg2.extras import RealDictCursor
+
+def serialize_datetime(obj):
+    if isinstance(obj, datetime):
+        return obj.isoformat()
+    raise TypeError(f"Type {type(obj)} not serializable")
 
 def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
     method: str = event.get('httpMethod', 'GET')
@@ -54,7 +60,7 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'progress': progress})
+                'body': json.dumps({'progress': progress}, default=serialize_datetime)
             }
         
         elif method == 'POST':
@@ -117,13 +123,13 @@ def handler(event: Dict[str, Any], context: Any) -> Dict[str, Any]:
                         'body': json.dumps({
                             'progress': dict(result),
                             'total_stars': player['total_stars'] if player else 0
-                        })
+                        }, default=serialize_datetime)
                     }
             
             return {
                 'statusCode': 200,
                 'headers': {'Content-Type': 'application/json', 'Access-Control-Allow-Origin': '*'},
-                'body': json.dumps({'progress': dict(result)})
+                'body': json.dumps({'progress': dict(result)}, default=serialize_datetime)
             }
         
         return {
