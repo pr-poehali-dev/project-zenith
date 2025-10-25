@@ -25,7 +25,7 @@ export interface GameState {
 }
 
 const GRAVITY = 0.6;
-const JUMP_FORCE = -12;
+const JUMP_FORCE = -9;
 const PLAYER_SIZE = 30;
 const GROUND_Y = 400;
 const SCROLL_SPEED = 5;
@@ -45,26 +45,14 @@ export const generateObstacles = (levelDifficulty: number, levelLength: number):
 
   for (let i = 0; i < obstacleCount; i++) {
     const x = 600 + i * spacing + Math.random() * spacing * 0.5;
-    const type: 'spike' | 'block' = Math.random() > 0.5 ? 'spike' : 'block';
     
-    if (type === 'spike') {
-      obstacles.push({
-        x,
-        y: GROUND_Y + PLAYER_SIZE,
-        type: 'spike',
-        width: 30,
-        height: 30,
-      });
-    } else {
-      const blockHeight = 40 + Math.random() * 60;
-      obstacles.push({
-        x,
-        y: GROUND_Y - blockHeight + PLAYER_SIZE,
-        type: 'block',
-        width: 40,
-        height: blockHeight,
-      });
-    }
+    obstacles.push({
+      x,
+      y: GROUND_Y + PLAYER_SIZE,
+      type: 'spike',
+      width: 30,
+      height: 30,
+    });
   }
 
   return obstacles;
